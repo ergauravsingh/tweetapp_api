@@ -1,4 +1,4 @@
-package com.tkouleris.tweety;
+package com.tweetapp;
 
 
 import static org.assertj.core.api.Assertions.assertThat;

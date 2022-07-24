@@ -14,10 +14,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
-public class TweetyApplication {
+public class TweetApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TweetyApplication.class, args);
+		SpringApplication.run(TweetApplication.class, args);
 	}
 
 	@Bean

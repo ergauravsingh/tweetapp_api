@@ -1,10 +1,10 @@
-package com.tkouleris.tweety;
+package com.tweetapp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TweetyApplicationTests {
+class TweetApplicationTests {
 
 	@Test
 	void contextLoads() {

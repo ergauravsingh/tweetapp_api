@@ -1,4 +1,5 @@
-<h1>Tweet App - REST api</h1>
+<h1>Tweet App - REST api</h1> <br/>
+by- Gaurav Singh
 <hr>
 
 <p>
@@ -9,6 +10,8 @@ We can perform the following actions: <br/>
 3) Tweet<br/>
 4) Comment<br/>
 </p>
+
+<hr>
 
 <h2>Swagger API Documentation</h2>
 <p>
