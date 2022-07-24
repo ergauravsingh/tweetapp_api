@@ -8,11 +8,11 @@
 		<version>2.2.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.tkouleris</groupId>
-	<artifactId>Tweety</artifactId>
+	<groupId>com.tweetapp</groupId>
+	<artifactId>Tweetapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Tweety</name>
-	<description>twitter clone</description>
+	<description>twitter api - by Gaurav Singh</description>
 
 	<properties>
 		<java.version>1.8</java.version>
