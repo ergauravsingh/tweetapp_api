@@ -20,12 +20,12 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 
-import com.tkouleris.tweety.dao.TweetRepository;
-import com.tkouleris.tweety.dao.UserRepository;
-import com.tkouleris.tweety.model.Tweet;
-import com.tkouleris.tweety.model.User;
-import com.tkouleris.tweety.service.TweetService;
-import com.tkouleris.tweety.util.TimestampUtil;
+import com.tweetapp.dao.TweetRepository;
+import com.tweetapp.dao.UserRepository;
+import com.tweetapp.model.Tweet;
+import com.tweetapp.model.User;
+import com.tweetapp.service.TweetService;
+import com.tweetapp.util.TimestampUtil;
 
 import io.jsonwebtoken.lang.Assert;
 
