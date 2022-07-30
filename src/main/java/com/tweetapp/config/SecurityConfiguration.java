@@ -34,8 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {		
 		http.csrf().disable()
-			.authorizeRequests().antMatchers("/tweety/register").permitAll()	
-			.antMatchers("/tweety/authenticate").permitAll()	
+			.authorizeRequests().antMatchers("/tweets/register").permitAll()	
+			.antMatchers("/tweets/authenticate").permitAll()	
 			.antMatchers("/v2/api-docs",
                     "/configuration/ui",
                     "/swagger-resources/**",
