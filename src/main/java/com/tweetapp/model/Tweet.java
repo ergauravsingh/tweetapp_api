@@ -1,7 +1,6 @@
 package com.tweetapp.model;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
