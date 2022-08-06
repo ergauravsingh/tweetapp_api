@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tweetapp.dao.UserRepository;
-import com.tweetapp.dto.LoginDto;
+import com.tweetapp.dto.Login;
 import com.tweetapp.model.User;
+import com.tweetapp.repository.UserRepository;
 import com.tweetapp.responses.ApiResponse;
 import com.tweetapp.service.CustomUserDetailsService;
-import com.tweetapp.service.UserCrudService;
+import com.tweetapp.service.UserService;
 import com.tweetapp.util.JwtUtil;
 
 @RestController
 @RequestMapping("/tweets")
 public class AuthController {
-	
+
 	@Autowired
-	private UserCrudService userCrudService;
+	private UserService userCrudService;
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	@Autowired
@@ -35,39 +35,51 @@ public class AuthController {
 	@Autowired
 	private ApiResponse apiResponse;
 	@Autowired
-	private LoginDto loginDto;
+	private Login loginObject;
 	@Autowired
 	private UserRepository userRepository;
-	
-	
 
+	/**
+	 * Register New User
+	 * 
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Object> register(@RequestBody User user) throws Exception
-	{
-		User newUser = userCrudService.createNewUser(user);	    
-	    apiResponse.setMessage("User created!");
-	    apiResponse.setData(newUser);
-		
-		return new ResponseEntity<>(apiResponse.getBodyResponse(),HttpStatus.CREATED);
+	public ResponseEntity<Object> register(@RequestBody User user) throws Exception {
+		User newUser = userCrudService.createNewUser(user);
+		apiResponse.setMessage("User created!");
+		apiResponse.setData(newUser);
+
+		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.CREATED);
 	}
-	
-	@PostMapping(value = "/authenticate", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Object> authenticateUser(@RequestBody User user)
-	{
-		Authentication auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-		authenticationManager.authenticate(auth); 
+
+	/**
+	 * Authenticate user by userid, password
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
+	public ResponseEntity<Object> authenticateUser(@RequestBody User user) {
+		// Create authentication object and authenticate with Authentication Manager
+		Authentication auth = new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword());
+		authenticationManager.authenticate(auth);
 		
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+		// Spring user returned by User Details Service
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
 		final String jwt = jwtTokenUtil.generateToken(userDetails);
-		User LoggedInUser = userRepository.findByUsername(user.getUsername());
+		User LoggedInUser = userRepository.findByUserName(user.getUserName());
 		
-		loginDto.setJwt(jwt);
-		loginDto.setUsername(user.getUsername());
-		loginDto.setUserid(LoggedInUser.getUser_id());
-		
-		apiResponse.setMessage("Auth Token!");
-		apiResponse.setData(loginDto);
-		 
-		return new ResponseEntity<>(apiResponse.getBodyResponse(),HttpStatus.OK);		 
+		// Prepare Login Return Object - with JWT Token
+		loginObject.setJwt(jwt);
+		loginObject.setUsername(user.getUserName());
+		loginObject.setUsername(LoggedInUser.getUserName());
+
+		apiResponse.setMessage("Auth Token Generated");
+		apiResponse.setData(loginObject);
+
+		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 }

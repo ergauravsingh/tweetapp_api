@@ -14,8 +14,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtUtil {
-	private String SECRET_KEY="jvBtDp1IU1eBv9d6Dy8ryCKY6op314vn1INVd0fCOt64L8Yf8VYAZv52nupFm";
-	private int EXPIRATION_TIME = 3600000; // 1 hour
+	private String SECRET_KEY="${jwt.secret}";
+	private int EXPIRATION_TIME = 1800000; // 30 mins
 	
 	public String extractUsername(String token)
 	{
@@ -61,8 +61,5 @@ public class JwtUtil {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
-	
-	
-	
 	
 }
