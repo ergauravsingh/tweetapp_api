@@ -38,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
 			.antMatchers("/tweets/login").permitAll()	
 			.antMatchers("/v2/api-docs",
                     "/configuration/ui",
+                    "/kafka/**",
                     "/swagger-resources/**",
                     "/configuration/security",
                     "/swagger-ui.html",
