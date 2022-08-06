@@ -66,7 +66,7 @@ public class UserService {
 			throw new Exception("Password not valid");
 		if (invalidEmail)
 			throw new Exception("Email not valid!");
-
+			
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		System.out.println(user);
 		return userRepository.save(user);
