@@ -1,5 +1,6 @@
 package com.tweetapp.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +8,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.tweetapp.dto.Tweeter;
-import com.tweetapp.dto.TweetersList;
+import com.tweetapp.dto.ReplyDto;
+import com.tweetapp.dto.TweetDto;
+import com.tweetapp.dto.UserDto;
+import com.tweetapp.model.Reply;
+import com.tweetapp.model.Tweet;
 import com.tweetapp.model.User;
+import com.tweetapp.repository.ReplyRepository;
+import com.tweetapp.repository.TweetRepository;
 import com.tweetapp.repository.UserRepository;
 
 @Service
@@ -18,7 +24,11 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
-	private UserRepository USER_REPOSITORY;
+	private UserRepository userRepository;
+	@Autowired
+	private TweetRepository tweetRepository;
+	@Autowired
+	private ReplyRepository replyRepository;
 
 	static final String USER_NAME_REGEX = "[A-Za-z0-9_]+";
 	static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}";
@@ -59,7 +69,7 @@ public class UserService {
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		System.out.println(user);
-		return USER_REPOSITORY.save(user);
+		return userRepository.save(user);
 	}
 
 	public User changePassword(User user) throws Exception {
@@ -76,27 +86,70 @@ public class UserService {
 			throw new Exception("Password not set or not valid");
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		return USER_REPOSITORY.save(user);
+		return userRepository.save(user);
 	}
 
-	public TweetersList listUsers(Authentication authentication) {
-		User LoggedInUser = USER_REPOSITORY.findByUserName(authentication.getName());
-		List<User> userList = USER_REPOSITORY.findAll();
+	public List<UserDto> listUsers(Authentication authentication) {
+		List<UserDto> userList = new ArrayList<>();
+		User loggedInUser = userRepository.findByUserName(authentication.getName());
+		
+		// get all users
+		List<User> savedUsers = userRepository.findAll();		
 
-		TweetersList tweetersList = new TweetersList();
-		for (User user : userList) {
-			Tweeter tweeter = new Tweeter();
-			tweeter.username = user.getUserName();
-			tweeter.email = user.getEmail();
-			tweetersList.tweetersList.add(tweeter);
+		if(savedUsers != null) {
+			for (User user : savedUsers) {
+				if(!user.getUserName().equals(loggedInUser.getUserName())) {
+					UserDto userDto = new UserDto();
+					userDto.setUserName(user.getUserName());
+					userDto.setFirstName(user.getFirstName());
+					userDto.setLastName(user.getLastName());
+					
+					// get all tweets of users
+					List<Tweet> savedTweets = tweetRepository.findByUserName(user.getUserName());
+					
+					if(savedTweets != null) {
+						List<TweetDto> tweetList = new ArrayList<>();
+						for(Tweet tweet : savedTweets) {
+							// prepare tweet dto
+							TweetDto tweetDto = new TweetDto();
+							tweetDto.setTweet_message(tweet.getTweet_message());
+							tweetDto.setLikes(tweet.getLikes());
+							tweetDto.setUserName(tweet.getUserName());
+							tweetDto.setTweet_created_at(tweet.getTweet_created_at());
+							tweetDto.setTweet_updated_at(tweet.getTweet_updated_at());
+						
+							// get all replies of tweet
+							List<Reply> savedReplies = replyRepository.findByTweetId(tweet.getTweetId());	
+							
+							if(savedReplies != null) {
+								List<ReplyDto> replyList = new ArrayList<>();
+								for (Reply reply : savedReplies) {
+									// prepare reply dto
+									ReplyDto replyDto = new ReplyDto();
+									replyDto.setReplyText(reply.getReplyText());
+									replyDto.setUserName(reply.getUserName());
+									replyDto.setReplyCreatedAt(reply.getReplyCreatedAt());
+									replyDto.setReplyUpdatedAt(reply.getReplyUpdatedAt());
+									replyList.add(replyDto);
+								}
+								tweetDto.setReplies(replyList);
+							}
+							tweetList.add(tweetDto);
+						}
+						userDto.setTweets(tweetList);
+					}
+					userList.add(userDto);
+					
+				}
+			}
 		}
 
-		return tweetersList;
+		return userList;
 	}
 
 	private Boolean doesUserExists(User user) {
-		if (USER_REPOSITORY.findByUserName(user.getUserName()) != null
-				|| USER_REPOSITORY.findByEmail(user.getEmail()) != null)
+		if (userRepository.findByUserName(user.getUserName()) != null
+				|| userRepository.findByEmail(user.getEmail()) != null)
 			return true;
 
 		return false;

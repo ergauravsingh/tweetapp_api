@@ -56,7 +56,7 @@ public class AuthController {
 	}
 
 	/**
-	 * Authenticate user by userid, password
+	 * Authenticate user by userId, password
 	 * 
 	 * @param user
 	 * @return

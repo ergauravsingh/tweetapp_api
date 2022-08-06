@@ -1,6 +1,5 @@
 package com.tweetapp.config;
 
-import java.rmi.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,7 +24,7 @@ public class ConverterConfig  {
 
 
     @Bean
-    public MongoTemplate mongoTemplate() throws UnknownHostException {
+    public MongoTemplate mongoTemplate() {
         MappingMongoConverter converter = new MappingMongoConverter(
                 new DefaultDbRefResolver(mongoDbFactory), new MongoMappingContext());
         converter.setCustomConversions(customConversions());

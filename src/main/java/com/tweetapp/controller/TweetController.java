@@ -18,15 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tweetapp.model.Tweet;
-import com.tweetapp.repository.UserRepository;
 import com.tweetapp.responses.ApiResponse;
 import com.tweetapp.service.TweetService;
 
 @RestController
 @RequestMapping("/tweets")
 public class TweetController {
-	@Autowired
-	private UserRepository userRepository;
+	
 	@Autowired
 	private TweetService tweetService;
 	@Autowired

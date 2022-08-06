@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.tweetapp.dto.TweetersList;
+import com.tweetapp.dto.UserDto;
 import com.tweetapp.model.User;
 import com.tweetapp.repository.UserRepository;
 import com.tweetapp.responses.ApiResponse;
@@ -37,7 +37,7 @@ public class UserController {
 	 */
 	@GetMapping(path = "/list", produces = "application/json")
 	public ResponseEntity<Object> listOfUsers(Authentication authentication) {
-		TweetersList userList = userService.listUsers(authentication);
+		List<UserDto> userList = userService.listUsers(authentication);
 		apiResponse.setData(userList);
 		apiResponse.setMessage("User List");
 

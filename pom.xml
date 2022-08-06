@@ -12,7 +12,7 @@
 	<groupId>com.tweetapp</groupId>
 	<artifactId>Tweetapp</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Tweety</name>
+	<name>Tweet App</name>
 	<description>Tweet app - by Gaurav Singh</description>
 
 	<properties>
