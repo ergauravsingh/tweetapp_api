@@ -1,4 +1,4 @@
-package com.tweetapp;
+package com.tweetapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,12 +16,11 @@ import com.tweetapp.model.User;
 import com.tweetapp.repository.ReplyRepository;
 import com.tweetapp.repository.TweetRepository;
 import com.tweetapp.repository.UserRepository;
-import com.tweetapp.service.ReplyService;
 
 import io.jsonwebtoken.lang.Assert;
 
 @SpringBootTest
-public class ReplyServiceTest {
+class ReplyServiceTest {
 
 	@InjectMocks
 	ReplyService replyService;

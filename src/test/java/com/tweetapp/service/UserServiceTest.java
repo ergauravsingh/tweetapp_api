@@ -1,4 +1,4 @@
-package com.tweetapp;
+package com.tweetapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -14,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.tweetapp.model.User;
 import com.tweetapp.repository.TweetRepository;
 import com.tweetapp.repository.UserRepository;
-import com.tweetapp.service.TweetService;
-import com.tweetapp.service.UserService;
 
 import io.jsonwebtoken.lang.Assert;
 

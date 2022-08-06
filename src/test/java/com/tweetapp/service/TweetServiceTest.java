@@ -1,7 +1,10 @@
-package com.tweetapp;
+package com.tweetapp.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +18,6 @@ import com.tweetapp.model.Tweet;
 import com.tweetapp.model.User;
 import com.tweetapp.repository.TweetRepository;
 import com.tweetapp.repository.UserRepository;
-import com.tweetapp.service.TweetService;
 
 import io.jsonwebtoken.lang.Assert;
 
@@ -47,6 +49,34 @@ class TweetServiceTest {
 		Assert.isTrue(savedTweet instanceof Tweet);
 		assertEquals("First Tweet", savedTweet.getTweet_message());
 		assertEquals(loggedInUser.getUserName(), savedTweet.getUserName());
+	}
+	
+	@Test
+	void test_get_tweet_by_id() throws Exception {
+		Tweet newTweet = new Tweet();
+		newTweet.setTweet_message("First Tweet");
+		newTweet.setTweetId("1");
+		Mockito.when(tweetRepository.findByTweetId(any(String.class))).thenReturn(newTweet);
+
+		Tweet returned = tweetService.getTweet("1");
+		Assert.isTrue(returned instanceof Tweet);
+		assertEquals("First Tweet", returned.getTweet_message());
+	}
+	
+	@Test
+	void test_get_all_tweets() throws Exception {
+		List<Tweet> tweetsList = new ArrayList<>();	
+		for(int i=0; i<5; i++) {
+			Tweet newTweet = new Tweet();
+			newTweet.setTweet_message("First Tweet");
+			newTweet.setTweetId(String.valueOf(i));	
+			tweetsList.add(newTweet);
+		}
+		
+		Mockito.when(tweetRepository.findAll()).thenReturn(tweetsList);
+
+		List<Tweet> returnedList = tweetService.getTweets();
+		assertEquals("First Tweet", returnedList.get(0).getTweet_message());
 	}
 
 	@Test
@@ -93,5 +123,6 @@ class TweetServiceTest {
 		Mockito.when(tweetRepository.findByTweetId("1")).thenReturn(tweet);
 		Assertions.assertThrows(Exception.class, () -> tweetService.updateTweet(authentication, "1", "Updated Tweet"));
 	}
+	
 
 }
