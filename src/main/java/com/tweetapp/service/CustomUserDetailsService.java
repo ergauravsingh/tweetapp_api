@@ -14,18 +14,18 @@ import com.tweetapp.repository.UserRepository;
 public class CustomUserDetailsService implements UserDetailsService{
 
 	@Autowired
-	private UserRepository R_user;
+	private UserRepository userRepository;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = R_user.findByUserName(username);
+		User user = userRepository.findByUserName(username);
 		
 		return new CustomUserDetails(user);
 	}
 	
 	public User getUserByUsername(String username)
 	{
-		return R_user.findByUserName(username);
+		return userRepository.findByUserName(username);
 	}
 	
 }
