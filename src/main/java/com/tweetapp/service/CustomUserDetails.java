@@ -7,15 +7,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.tweetapp.model.User;
 
-public class CustomUserDetails implements UserDetails{
-	
+public class CustomUserDetails implements UserDetails {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private User user;
 
-	public CustomUserDetails(User user)
-	{
+	public CustomUserDetails(User user) {
 		this.user = user;
 	}
-	
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		// TODO Future feature
@@ -23,13 +26,13 @@ public class CustomUserDetails implements UserDetails{
 	}
 
 	@Override
-	public String getPassword() {		
+	public String getPassword() {
 		return this.user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return this.user.getUsername();
+		return this.user.getUserName();
 	}
 
 	@Override

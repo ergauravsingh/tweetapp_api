@@ -7,100 +7,84 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.tweetapp.dao.FollowerRepository;
-import com.tweetapp.dao.TweetRepository;
-import com.tweetapp.dao.UserRepository;
-import com.tweetapp.model.Follower;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.model.User;
-import com.tweetapp.util.TimestampUtil;
+import com.tweetapp.repository.TweetRepository;
+import com.tweetapp.repository.UserRepository;
 
 @Service
 public class TweetService {
-	
-	@Autowired
-	TweetRepository R_Tweet;
-	@Autowired
-	UserRepository R_User;
-	@Autowired
-	TimestampUtil timestampUtil;
-	@Autowired
-	FollowerRepository R_Follower;
-	
-	public List<Tweet> getFeed(User loggedInUser)
-	{
-		Tweet latestUserTweet = null;
-		List<Tweet> userTweets = R_Tweet.findLatestTweetByUser(loggedInUser.getUser_id());
-		if(userTweets.size() > 0) latestUserTweet = userTweets.get(0);
 
-		List<Tweet> followTweets = R_Tweet.findTweetsThatUserFollows(loggedInUser);
-		if(latestUserTweet != null && latestUserTweet.getTweet_updated_at().after(timestampUtil.oneMinuteBackTimestamp()))
-		{
-			followTweets.add(0,latestUserTweet);
-		}
-		return followTweets;
-	}
-	
-	public Tweet createTweet(Authentication authentication, Tweet newTweet)
-	{		
-        User LoggedInUser = R_User.findByUsername(authentication.getName());
-        newTweet.setTweet_user_id(LoggedInUser);
-        Timestamp currentTimestamp = timestampUtil.currentTimestamp();
-        newTweet.setTweet_created_at(currentTimestamp );
-        newTweet.setTweet_updated_at(currentTimestamp );        
-        return R_Tweet.save(newTweet);
-	}
-	
-	public Tweet updateTweet(Authentication authentication, long tweet_id, String message) throws Exception
-	{
-		Tweet tweetToUpdate = R_Tweet.findById(tweet_id).orElse(null);
-		User loggedInUser = R_User.findByUsername(authentication.getName());
-		if(tweetToUpdate == null)
-		{
-			throw new Exception("Tweet not found");
-		}
-		if(!loggedInUser.equals(tweetToUpdate.getTweet_user_id()))
-		{
-			throw new Exception("No permission to edit this tweet!");
-		}		
-		tweetToUpdate.setTweet_message(message);
-		tweetToUpdate.setTweet_updated_at(timestampUtil.currentTimestamp());
-		return R_Tweet.save(tweetToUpdate);
-	}
-	
-	public Tweet deleteTweet(Authentication authentication, long tweet_id) throws Exception
-	{
-		Tweet tweetToDelete = R_Tweet.findById(tweet_id).orElse(null);
-		if( tweetToDelete == null)
-		{
-			throw new Exception("Tweet to delete not found!");
-		}
+	@Autowired
+	TweetRepository tweetRepository;
+	@Autowired
+	UserRepository userRepository;
+
+	// create new tweet
+	public Tweet createTweet(Authentication authentication, Tweet newTweet) {
+		User LoggedInUser = userRepository.findByUserName(authentication.getName());
+		newTweet.setUserName(LoggedInUser.getUserName());
+		Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+		newTweet.setTweet_created_at(currentTimestamp);
+		newTweet.setTweet_updated_at(currentTimestamp);
 		
-		User LoggedInUser = R_User.findByUsername(authentication.getName());		
-		if(LoggedInUser != tweetToDelete.getTweet_user_id())
-		{
-			throw new Exception("You have no rights to delete this tweet!");
-		}
-		
-		R_Tweet.delete(tweetToDelete);
-		
-		return tweetToDelete;					
+		return tweetRepository.save(newTweet);
 	}
-	
-	public Tweet getTweet(long tweet_id) throws Exception
-	{
-		Tweet tweet = R_Tweet.findById(tweet_id).orElse(null);
-		if(tweet == null)
-		{
-			throw new Exception("No tweet found!");			
+
+	// get tweet by id
+	public Tweet getTweet(String tweet_id) throws Exception {
+		Tweet tweet = tweetRepository.findByTweetId(tweet_id);
+		if (tweet == null) {
+			throw new Exception("No tweet found!");
 		}
 		return tweet;
 	}
-	
-	public List<Tweet> showUserTweets(long user_id)
-	{
-		List<Tweet> userTweets = R_Tweet.findLatestTweetByUser(user_id);
-		
+
+	// get all tweets
+	public List<Tweet> getTweets() {
+		List<Tweet> allTweets = tweetRepository.findAll();
+
+		return allTweets;
+	}
+
+	// get tweets by username
+	public List<Tweet> getUserTweets(String userName) {
+		List<Tweet> userTweets = tweetRepository.findByUserName(userName);
+
 		return userTweets;
 	}
+
+	// update tweet
+	public Tweet updateTweet(Authentication authentication, String tweet_id, String message) throws Exception {
+		Tweet tweetToUpdate = tweetRepository.findByTweetId(tweet_id);
+		User loggedInUser = userRepository.findByUserName(authentication.getName());
+		if (tweetToUpdate == null) {
+			throw new Exception("Tweet not found");
+		}
+		if (!loggedInUser.getUserName().equals(tweetToUpdate.getUserName())) {
+			throw new Exception("No permission to edit this tweet!");
+		}
+		tweetToUpdate.setTweet_message(message);
+		tweetToUpdate.setTweet_updated_at(new Timestamp(System.currentTimeMillis()));
+		return tweetRepository.save(tweetToUpdate);
+	}
+
+	// delete tweet
+	public Tweet deleteTweet(Authentication authentication, String tweetId) throws Exception {
+		Tweet tweetToDelete = tweetRepository.findByTweetId(tweetId);
+		if (tweetToDelete == null) {
+			throw new Exception("Tweet to delete not found!");
+		}
+
+		User LoggedInUser = userRepository.findByUserName(authentication.getName());
+
+		if (!LoggedInUser.getUserName().equals(LoggedInUser.getUserName())) {
+			throw new Exception("You have no rights to delete this tweet!");
+		}
+
+		tweetRepository.delete(tweetToDelete);
+
+		return tweetToDelete;
+	}
+
 }

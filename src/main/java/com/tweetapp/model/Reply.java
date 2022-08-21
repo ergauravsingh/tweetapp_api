@@ -1,5 +1,7 @@
 package com.tweetapp.model;
 
+import java.sql.Timestamp;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -8,14 +10,16 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "users")
-public class User {
+@Document(collection="replies")
+public class Reply {
 	@Id
+	private String replyId;
+	private String replyText;
+	
+	private String tweetId;
 	private String userName;
-
-	private String firstName;
-	private String lastName;
-	private String password;
-	private String email;
-
+	
+	private Timestamp replyCreatedAt;
+	private Timestamp replyUpdatedAt;
+	
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.tweetapp.responses.ApiResponse;
 
 @ControllerAdvice
-public class ControllerAdvisor {
+public class GlobalErrorController {
 	
 	@Autowired
 	private ApiResponse apiResponse;
