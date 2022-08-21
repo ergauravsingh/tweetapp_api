@@ -7,10 +7,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.tweetapp.kafka.Producer;
 import com.tweetapp.model.User;
 import com.tweetapp.repository.TweetRepository;
 import com.tweetapp.repository.UserRepository;
@@ -37,6 +39,9 @@ class UserServiceTest {
 
 	@Mock
 	Authentication authentication;
+	
+	@Mock
+	Producer producer;
 
 	@Test
 	void test_create_new_user() throws Exception {

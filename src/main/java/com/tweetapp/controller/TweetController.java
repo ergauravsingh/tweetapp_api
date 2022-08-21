@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tweetapp.kafka.Producer;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.responses.ApiResponse;
 import com.tweetapp.service.TweetService;
@@ -29,13 +30,19 @@ public class TweetController {
 	private TweetService tweetService;
 	@Autowired
 	private ApiResponse apiResponse;
+	
+	@Autowired
+	private Producer producer;
+	
 
 	@GetMapping(path = "/all", produces = "application/json")
 	public ResponseEntity<Object> getAllTweets(Authentication authentication) {
 		List<Tweet> userFeed = tweetService.getTweets();
 		apiResponse.setMessage("User Feed!");
 		apiResponse.setData(userFeed);
-
+		
+		producer.sendMessage("Fetch all tweets called");
+		
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 
@@ -44,15 +51,19 @@ public class TweetController {
 		List<Tweet> userTweets = tweetService.getUserTweets(userName);
 		apiResponse.setMessage("Tweets by user");
 		apiResponse.setData(userTweets);
-
+		
+		producer.sendMessage("Get tweets for user -> " + userName);
+				
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 	
 	@GetMapping(path = "/{tweet_id}", produces = "application/json")
-	public ResponseEntity<Object> getTweet(@PathVariable("tweet_id") String tweet_id) throws Exception {
-		Tweet tweet = tweetService.getTweet(tweet_id);
+	public ResponseEntity<Object> getTweet(@PathVariable("tweet_id") String tweetId) throws Exception {
+		Tweet tweet = tweetService.getTweet(tweetId);
 		apiResponse.setMessage("Tweet");
 		apiResponse.setData(tweet);
+		
+		producer.sendMessage("Get tweet -> " + tweetId);
 
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
@@ -62,6 +73,8 @@ public class TweetController {
 		Tweet savedTweet = tweetService.createTweet(authentication, newTweet);
 		apiResponse.setMessage("Tweet created!");
 		apiResponse.setData(savedTweet);
+		
+		producer.sendMessage("Created a tweet");
 
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.CREATED);
 	}
@@ -72,6 +85,8 @@ public class TweetController {
 		Tweet updatedTweet = tweetService.updateTweet(authentication, tweet_id, tweet.getTweet_message());
 		apiResponse.setMessage("Tweet updated!");
 		apiResponse.setData(updatedTweet);
+		
+		producer.sendMessage("Updated a tweet ");
 
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
@@ -82,6 +97,8 @@ public class TweetController {
 		Tweet deletedTweet = tweetService.deleteTweet(authentication, tweet_id);
 		apiResponse.setMessage("Tweet deleted!");
 		apiResponse.setData(deletedTweet);
+		
+		producer.sendMessage("Deleted a tweet ");
 
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}

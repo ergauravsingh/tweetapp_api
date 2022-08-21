@@ -1,0 +1,20 @@
+spring:
+ mvc:
+   pathmatch:
+        matching-strategy: ANT_PATH_MATCHER
+ kafka:
+    consumer:
+      bootstrap-servers:   ${KAFKA_SERVER:localhost:9092}
+      group-id: tweet-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers:  ${KAFKA_SERVER:localhost:9092}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

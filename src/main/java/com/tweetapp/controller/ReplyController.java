@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.tweetapp.kafka.Producer;
 import com.tweetapp.model.Reply;
 import com.tweetapp.responses.ApiResponse;
 import com.tweetapp.service.ReplyService;
@@ -26,6 +27,9 @@ public class ReplyController {
 	@Autowired
 	ApiResponse apiResponse;
 
+	@Autowired
+	private Producer producer;
+	
 	@PostMapping(path = "/reply", produces = "application/json")
 	public ResponseEntity<Object> replyToTweet(@RequestBody Reply reply, Authentication authentication)
 			throws Exception {
@@ -33,14 +37,20 @@ public class ReplyController {
 		Reply savedReply = replyService.replyToTweet(authentication, reply.getTweetId(), reply);
 		apiResponse.setData(savedReply);
 		apiResponse.setMessage("Reply created!");
+		
+		producer.sendMessage("Replied to a tweet");
+		
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 
 	@GetMapping(path = "/{tweet_id}/reply/all", produces = "application/json")
-	public ResponseEntity<Object> getRepliesByTweet(@PathVariable("tweet_id") String tweet_id) throws Exception {
-		List<Reply> tweet_comments = replyService.getRepliesByTweet(tweet_id);
-		apiResponse.setData(tweet_comments);
+	public ResponseEntity<Object> getRepliesByTweet(@PathVariable("tweet_id") String tweetId) throws Exception {
+		List<Reply> tweetComments = replyService.getRepliesByTweet(tweetId);
+		apiResponse.setData(tweetComments);
 		apiResponse.setMessage("tweet comments");
+		
+		producer.sendMessage("Get all tweets called");
+		
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 
@@ -50,6 +60,9 @@ public class ReplyController {
 		Reply deletedReply = replyService.deleteReply(authentication, replyId);
 		apiResponse.setData(deletedReply);
 		apiResponse.setMessage("Reply deleted");
+		
+		producer.sendMessage("Deleted a tweet");
+		
 		return new ResponseEntity<>(apiResponse.getBodyResponse(), HttpStatus.OK);
 	}
 

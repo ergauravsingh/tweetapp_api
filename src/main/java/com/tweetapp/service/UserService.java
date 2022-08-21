@@ -3,6 +3,8 @@ package com.tweetapp.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.tweetapp.dto.ReplyDto;
 import com.tweetapp.dto.TweetDto;
 import com.tweetapp.dto.UserDto;
+import com.tweetapp.kafka.Producer;
 import com.tweetapp.model.Reply;
 import com.tweetapp.model.Tweet;
 import com.tweetapp.model.User;
@@ -29,6 +32,11 @@ public class UserService {
 	private TweetRepository tweetRepository;
 	@Autowired
 	private ReplyRepository replyRepository;
+
+	@Autowired
+	private Producer producer;
+
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	static final String USER_NAME_REGEX = "[A-Za-z0-9_]+";
 	static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}";
@@ -66,9 +74,14 @@ public class UserService {
 			throw new Exception("Password not valid");
 		if (invalidEmail)
 			throw new Exception("Email not valid!");
-			
+
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		System.out.println(user);
+
+		if (!username.isEmpty()) {
+			producer.sendMessage("User created with userid -> " + username);
+			logger.info("User created with userid -> {}", username);
+		}
 		return userRepository.save(user);
 	}
 
@@ -86,30 +99,35 @@ public class UserService {
 			throw new Exception("Password not set or not valid");
 
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		if(!user.getUserName().isEmpty()) {
+			producer.sendMessage("Changed Password for User -> " + user.getUserName());
+			logger.info("Changed Password for User -> {}",user.getUserName());
+		}
+		
 		return userRepository.save(user);
 	}
 
 	public List<UserDto> listUsers(Authentication authentication) {
 		List<UserDto> userList = new ArrayList<>();
 		User loggedInUser = userRepository.findByUserName(authentication.getName());
-		
-		// get all users
-		List<User> savedUsers = userRepository.findAll();		
 
-		if(savedUsers != null) {
+		// get all users
+		List<User> savedUsers = userRepository.findAll();
+
+		if (savedUsers != null) {
 			for (User user : savedUsers) {
-				if(!user.getUserName().equals(loggedInUser.getUserName())) {
+				if (!user.getUserName().equals(loggedInUser.getUserName())) {
 					UserDto userDto = new UserDto();
 					userDto.setUserName(user.getUserName());
 					userDto.setFirstName(user.getFirstName());
 					userDto.setLastName(user.getLastName());
-					
+
 					// get all tweets of users
 					List<Tweet> savedTweets = tweetRepository.findByUserName(user.getUserName());
-					
-					if(savedTweets != null) {
+
+					if (savedTweets != null) {
 						List<TweetDto> tweetList = new ArrayList<>();
-						for(Tweet tweet : savedTweets) {
+						for (Tweet tweet : savedTweets) {
 							// prepare tweet dto
 							TweetDto tweetDto = new TweetDto();
 							tweetDto.setTweet_message(tweet.getTweet_message());
@@ -117,11 +135,11 @@ public class UserService {
 							tweetDto.setUserName(tweet.getUserName());
 							tweetDto.setTweet_created_at(tweet.getTweet_created_at());
 							tweetDto.setTweet_updated_at(tweet.getTweet_updated_at());
-						
+
 							// get all replies of tweet
-							List<Reply> savedReplies = replyRepository.findByTweetId(tweet.getTweetId());	
-							
-							if(savedReplies != null) {
+							List<Reply> savedReplies = replyRepository.findByTweetId(tweet.getTweetId());
+
+							if (savedReplies != null) {
 								List<ReplyDto> replyList = new ArrayList<>();
 								for (Reply reply : savedReplies) {
 									// prepare reply dto
@@ -139,7 +157,7 @@ public class UserService {
 						userDto.setTweets(tweetList);
 					}
 					userList.add(userDto);
-					
+
 				}
 			}
 		}
