@@ -16,6 +16,8 @@ public class TweetDto {
 	private Timestamp tweet_updated_at;
 
 	private String userName;
+	private String firstName;
+	private String lastName;
 	private List<ReplyDto> replies;
 
 }

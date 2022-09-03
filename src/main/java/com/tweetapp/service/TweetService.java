@@ -24,6 +24,8 @@ public class TweetService {
 	public Tweet createTweet(Authentication authentication, Tweet newTweet) {
 		User LoggedInUser = userRepository.findByUserName(authentication.getName());
 		newTweet.setUserName(LoggedInUser.getUserName());
+		newTweet.setFirstName(LoggedInUser.getFirstName());
+		newTweet.setLastName(LoggedInUser.getLastName());
 		Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 		newTweet.setTweet_created_at(currentTimestamp);
 		newTweet.setTweet_updated_at(currentTimestamp);

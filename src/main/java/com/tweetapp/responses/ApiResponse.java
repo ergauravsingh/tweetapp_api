@@ -16,7 +16,7 @@ public class ApiResponse {
     	body.put("timestamp", null);
     	body.put("message", null);
     	body.put("data", null);
-    }
+    	body.put("error", null);    }
     
     public void setMessage(String message)
     {
@@ -28,6 +28,10 @@ public class ApiResponse {
     	body.put("data", data);
     }
     
+    public void setError(String error)
+    {
+    	body.put("error", error);
+    }    
     
     public Map<String,Object> getBodyResponse()
     {
