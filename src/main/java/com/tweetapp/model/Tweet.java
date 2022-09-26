@@ -20,7 +20,9 @@ public class Tweet {
 	private Timestamp tweet_created_at;
 	private Timestamp tweet_updated_at;
 	
-	private String userName;	
+	private String userName;
+	private String firstName;
+	private String lastName;
 
 	
 }

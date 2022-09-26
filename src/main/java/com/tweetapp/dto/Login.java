@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class Login {
 	private String username;
 	private String jwt;
+	private String firstName;
+	private String lastName;
 }

@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import com.tweetapp.util.JwtUtil;
 
 @RestController
 @RequestMapping("/tweets")
+@CrossOrigin
 public class AuthController {
 
 	@Autowired
@@ -62,10 +64,14 @@ public class AuthController {
 	 * @return
 	 */
 	@PostMapping(value = "/login", consumes = "application/json", produces = "application/json")
-	public ResponseEntity<Object> authenticateUser(@RequestBody User user) {
+	public ResponseEntity<Object> authenticateUser(@RequestBody User user) throws Exception{
 		// Create authentication object and authenticate with Authentication Manager
 		Authentication auth = new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword());
-		authenticationManager.authenticate(auth);
+		try {
+			authenticationManager.authenticate(auth);
+		}catch(Exception ex){
+			throw new Exception("Username or Password not valid");
+		}
 		
 		// Spring user returned by User Details Service
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
@@ -75,7 +81,8 @@ public class AuthController {
 		// Prepare Login Return Object - with JWT Token
 		loginObject.setJwt(jwt);
 		loginObject.setUsername(user.getUserName());
-		loginObject.setUsername(LoggedInUser.getUserName());
+		loginObject.setFirstName(LoggedInUser.getFirstName());
+		loginObject.setLastName(LoggedInUser.getLastName());
 
 		apiResponse.setMessage("Auth Token Generated");
 		apiResponse.setData(loginObject);
