@@ -4,15 +4,17 @@ spring:
         matching-strategy: ANT_PATH_MATCHER
  kafka:
     consumer:
-      bootstrap-servers:   ${KAFKA_SERVER:localhost:9092}
+      bootstrap-servers:   ${KAFKA_SERVER:http://ec2-18-205-117-208.compute-1.amazonaws.com:9092}
       group-id: tweet-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
-      bootstrap-servers:  ${KAFKA_SERVER:localhost:9092}
+      bootstrap-servers:  ${KAFKA_SERVER:http://ec2-18-205-117-208.compute-1.amazonaws.com:9092}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      missing-topics-fatal: false 
 management:
   endpoints:
     web:
