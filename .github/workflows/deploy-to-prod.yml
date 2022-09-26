@@ -27,7 +27,7 @@ jobs:
 
     - name: Build, tag, and push image to Amazon ECR
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: public.ecr.aws/l7j0c4z3
         ECR_REPOSITORY: tweetapp-service-mongo
         IMAGE_TAG: latest
       run: |
